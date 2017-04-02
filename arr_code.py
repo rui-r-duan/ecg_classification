@@ -101,3 +101,9 @@ y_train_ensemble = eclf.predict(X_train)
 y_pred_ensemble = eclf.predict(X_val)
 print('Ensemble Voting Train Score:', np.mean(y_train == y_train_ensemble))
 print('Ensemble Voting Val Score:', np.mean(y_val == y_pred_ensemble))
+
+'''
+Outputs:
+Ensemble Voting Train Score: 1.0
+Ensemble Voting Val Score: 0.786764705882
+'''
