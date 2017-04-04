@@ -47,7 +47,21 @@ print('XGB Val Score:', np.mean(y_val == y_pred_xgb))
 '''
 Outputs:
 XGB Train Score: 1.0
-XGB Val Score: 0.764705882353
+XGB Val Score: 0.75
+'''
+
+from sklearn.ensemble import GradientBoostingClassifier
+gbrt = GradientBoostingClassifier(random_state=0)
+gbrt.fit(X_train, y_train)
+y_train_gbrt = gbrt.predict(X_train)
+y_pred_gbrt = gbrt.predict(X_val)
+print('GBRT Train Score:', np.mean(y_train == y_train_gbrt))
+print('GBRT Val Score:', np.mean(y_val == y_pred_gbrt))
+
+'''
+Outputs:
+GBRT Train Score: 1.0
+GBRT Val Score: 0.772058823529
 '''
 
 # -------- Predicting with Random Forest
@@ -94,8 +108,10 @@ Logistic Regression Val Score: 0.705882352941
 
 from sklearn.ensemble import VotingClassifier
 
-eclf = VotingClassifier(estimators=[('xgboost', model), ('forest', forest), ('logistic regression', lr)],
-                        voting='soft', weights=[2, 2, 1])
+eclf = VotingClassifier(estimators=[('xgboost', model), ('gbrt', gbrt), ('forest', forest),
+                                    ('logistic regression', lr)],
+                        voting='soft',
+                        weights=None)#[2, 5, 2, 1])
 eclf = eclf.fit(X_train, y_train)
 y_train_ensemble = eclf.predict(X_train)
 y_pred_ensemble = eclf.predict(X_val)
