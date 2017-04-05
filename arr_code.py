@@ -94,6 +94,9 @@ print('Logistic Regression Val Score:', np.mean(y_val == y_pred_lr))
 Outputs:
 Logistic Regression Train Score: 0.990506329114
 Logistic Regression Val Score: 0.705882352941
+Logistic Regression (C=0.1) Train Score: 0.908227848101
+Logistic Regression (C=0.1) Val Score: 0.772058823529
+
 '''
 
 # -------- Predicting with Ensemble Voting based on the above classifiers
