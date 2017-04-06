@@ -36,9 +36,9 @@ xgb.fit(X_train, y_train)
 y_train_xgb = xgb.predict(X_train)
 y_pred_xgb = xgb.predict(X_test)
 print('XGB Train Score:', np.mean(y_train == y_train_xgb))
-print('XGB Val Score:', np.mean(y_test == y_pred_xgb))
+print('XGB Test Score:', np.mean(y_test == y_pred_xgb))
 print('XGB Train Score: {:.2f}'.format(xgb.score(X_train, y_train))) # R^2 score: mean accuracy
-print('XGB Val Score: {:.2f}'.format(xgb.score(X_test, y_test)))
+print('XGB Test Score: {:.2f}'.format(xgb.score(X_test, y_test)))
 # 10-fold cross validation for XGB
 from sklearn.model_selection import cross_val_score
 scores = cross_val_score(xgb, X, y, cv=10)
@@ -47,7 +47,7 @@ print("XGB Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 '''
 Outputs:
 XGB Train Score: 1.0
-XGB Val Score: 0.75
+XGB Test Score: 0.75
 XGB Accuracy: 0.74 (+/- 0.10)
 '''
 
@@ -58,7 +58,7 @@ gbrt.fit(X_train, y_train)
 y_train_gbrt = gbrt.predict(X_train)
 y_pred_gbrt = gbrt.predict(X_test)
 print('GBRT Train Score: {:.2f}'.format(gbrt.score(X_train, y_train))) # R^2 score: mean accuracy
-print('GBRT Val Score: {:.2f}'.format(gbrt.score(X_test, y_test)))
+print('GBRT Test Score: {:.2f}'.format(gbrt.score(X_test, y_test)))
 # 10-fold cross validation for GBRT
 from sklearn.model_selection import cross_val_score
 scores = cross_val_score(gbrt, X, y, cv=10)
@@ -67,7 +67,7 @@ print("GBRT Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 '''
 Outputs:
 GBRT Train Score: 1.0
-GBRT Val Score: 0.772058823529
+GBRT Test Score: 0.772058823529
 '''
 
 # -------- Predicting with Random Forest
@@ -77,12 +77,12 @@ forest.fit(X_train, y_train)
 y_train_forest = forest.predict(X_train)
 y_pred_forest = forest.predict(X_test)
 print('Random Forest Train Score:', np.mean(y_train == y_train_forest))
-print('Random Forest Val Score:', np.mean(y_test == y_pred_forest))
+print('Random Forest Test Score:', np.mean(y_test == y_pred_forest))
 
 '''
 Outputs:
 Random Forest Train Score: 0.981012658228
-Random Forest Val Score: 0.713235294118
+Random Forest Test Score: 0.713235294118
 '''
 
 # -------- Predicting with Logistic Regression
@@ -92,14 +92,14 @@ lr.fit(X_train, y_train)
 y_train_lr = lr.predict(X_train)
 y_pred_lr = lr.predict(X_test)
 print('Logistic Regression Train Score:', np.mean(y_train == y_train_lr))
-print('Logistic Regression Val Score:', np.mean(y_test == y_pred_lr))
+print('Logistic Regression Test Score:', np.mean(y_test == y_pred_lr))
 
 '''
 Outputs:
 Logistic Regression Train Score: 0.990506329114
-Logistic Regression Val Score: 0.705882352941
+Logistic Regression Test Score: 0.705882352941
 Logistic Regression (C=0.1) Train Score: 0.908227848101
-Logistic Regression (C=0.1) Val Score: 0.772058823529
+Logistic Regression (C=0.1) Test Score: 0.772058823529
 '''
 
 # -------- Predicting with Ensemble Voting based on the above classifiers
@@ -108,24 +108,15 @@ from sklearn.ensemble import VotingClassifier
 eclf = VotingClassifier(estimators=[('xgboost', xgb), ('gbrt', gbrt), ('forest', forest),
                                     ('logistic regression', lr)],
                         voting='soft',
-                        weights=None)#[2, 5, 2, 1]) # None: uses uniform weights
+                        weights=None) #[2, 5, 2, 1]) # None: uses uniform weights
 eclf = eclf.fit(X_train, y_train)
 y_train_ensemble = eclf.predict(X_train)
 y_pred_ensemble = eclf.predict(X_test)
 print('Ensemble Voting Train Score:', np.mean(y_train == y_train_ensemble))
-print('Ensemble Voting Val Score:', np.mean(y_test == y_pred_ensemble))
+print('Ensemble Voting Test Score:', np.mean(y_test == y_pred_ensemble))
 
 '''
 Outputs:
 Ensemble Voting Train Score: 1.0
-Ensemble Voting Val Score: 0.786764705882
+Ensemble Voting Test Score: 0.786764705882
 '''
-
-import matplotlib.pyplot as plt
-plt.hist(y, bins=17, align='left', rwidth=0.6)
-x = np.arange(1,17)
-h, bins = np.histogram(y, 16)
-plt.bar(x-0.4, h)
-plt.xlabel('Class Labels')
-plt.ylabel('Number of Instances')
-plt.xticks(x)
