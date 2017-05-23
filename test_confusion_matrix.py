@@ -25,8 +25,8 @@ eclf = VotingClassifier(estimators=[('xgboost', xgb), ('gbrt', gbrt), ('forest',
 classifier_list = [xgb, gbrt, forest, lr, eclf]
 
 for clf in classifier_list:
-    y_pred = eclf.fit(X_train, y_train).predict(X_test)
-    y_train_pred = eclf.fit(X_train, y_train).predict(X_train)
+    y_pred = clf.fit(X_train, y_train).predict(X_test)
+    y_train_pred = clf.fit(X_train, y_train).predict(X_train)
 
     # Compute confusion matrix
     cnf_test = confusion_matrix(y_test, y_pred, labels=range(1, 17))
