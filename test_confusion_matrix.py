@@ -5,10 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import VotingClassifier
 from sklearn.model_selection import train_test_split
-import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
-# from plot_confusion_matrix import plot_confusion_matrix
 from plot_confusion_matrix import gen_confusion_matrix_figure
 
 
@@ -25,24 +22,20 @@ eclf = VotingClassifier(estimators=[('xgboost', xgb), ('gbrt', gbrt), ('forest',
                         voting='soft',
                         weights=None)
 
-y_pred = eclf.fit(X_train, y_train).predict(X_test)
-y_train_pred = eclf.fit(X_train, y_train).predict(X_train)
+classifier_list = [xgb, gbrt, forest, lr, eclf]
 
-# Compute confusion matrix
-cnf_matrix = confusion_matrix(y_test, y_pred, labels=range(1, 17))
-cnf_train = confusion_matrix(y_train, y_train_pred, labels=range(1, 17))
-# np.set_printoptions(precision=2)
+for clf in classifier_list:
+    y_pred = eclf.fit(X_train, y_train).predict(X_test)
+    y_train_pred = eclf.fit(X_train, y_train).predict(X_train)
 
-# Plot non-normalized confusion matrix
-# plt.figure()
-# plot_confusion_matrix(cnf_matrix, classes=range(1,13), normalize=True,
-#                       title='Confusion matrix, without normalization')
-#
-#
-# plt.figure()
-# plot_confusion_matrix(cnf_train, classes=range(1,14), normalize=True,
-#                       title='Confusion matrix, without normalization')
-# plt.show()
+    # Compute confusion matrix
+    cnf_test = confusion_matrix(y_test, y_pred, labels=range(1, 17))
+    cnf_train = confusion_matrix(y_train, y_train_pred, labels=range(1, 17))
 
-gen_confusion_matrix_figure(cnf_matrix, "voting")
-gen_confusion_matrix_figure(cnf_train, "voting_train")
+    # Plot confusion matrix
+    gen_confusion_matrix_figure(cnf_test,
+                                clf.__class__.__name__ + "_test",
+                                is_save_to_file=True)
+    gen_confusion_matrix_figure(cnf_train,
+                                clf.__class__.__name__ + "_train",
+                                is_save_to_file=True)
