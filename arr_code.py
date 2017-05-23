@@ -1,28 +1,7 @@
+from common_load import load_data
 import numpy as np
-import pandas as pd
 
-# remove question mark (missing values) in the raw file
-with open('arrhythmia.data.orig') as inputfile:
-    with open('arrhythmia.data', 'w') as outputfile:
-        for line in inputfile:
-            outputfile.write(line.replace('?', ''))
-
-# read the data
-df = pd.read_csv('arrhythmia.data', header=None)
-y = df.iloc[:, -1]  # The last column is the ground-truth label vector
-X = df.iloc[:, :-1]  # The first to second-last columns are the features
-
-# impute the missing data in the dataset
-from sklearn.preprocessing import Imputer
-
-imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
-X = imp.fit_transform(X)
-
-# normalizing the dataset
-from sklearn.preprocessing import StandardScaler
-
-sc = StandardScaler()
-X = sc.fit_transform(X)
+X, y = load_data()
 
 # splitting the dataset to training and validation datasets
 from sklearn.model_selection import train_test_split
@@ -44,13 +23,6 @@ from sklearn.model_selection import cross_val_score
 scores = cross_val_score(xgb, X, y, cv=10)
 print("XGB Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
-'''
-Outputs:
-XGB Train Score: 1.0
-XGB Test Score: 0.75
-XGB Accuracy: 0.74 (+/- 0.10)
-'''
-
 # -------- Predicting with Gradient Boosting
 from sklearn.ensemble import GradientBoostingClassifier
 gbrt = GradientBoostingClassifier(random_state=0)
@@ -64,12 +36,6 @@ from sklearn.model_selection import cross_val_score
 scores = cross_val_score(gbrt, X, y, cv=10)
 print("GBRT Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
-'''
-Outputs:
-GBRT Train Score: 1.0
-GBRT Test Score: 0.772058823529
-'''
-
 # -------- Predicting with Random Forest
 from sklearn.ensemble import RandomForestClassifier
 forest = RandomForestClassifier(n_jobs=-1, random_state=0)
@@ -79,12 +45,6 @@ y_pred_forest = forest.predict(X_test)
 print('Random Forest Train Score:', np.mean(y_train == y_train_forest))
 print('Random Forest Test Score:', np.mean(y_test == y_pred_forest))
 
-'''
-Outputs:
-Random Forest Train Score: 0.981012658228
-Random Forest Test Score: 0.713235294118
-'''
-
 # -------- Predicting with Logistic Regression
 from sklearn.linear_model import LogisticRegression
 lr = LogisticRegression(C=0.1) # C controls the strength of regularization, smaller value, stronger regularization
@@ -93,14 +53,6 @@ y_train_lr = lr.predict(X_train)
 y_pred_lr = lr.predict(X_test)
 print('Logistic Regression Train Score:', np.mean(y_train == y_train_lr))
 print('Logistic Regression Test Score:', np.mean(y_test == y_pred_lr))
-
-'''
-Outputs:
-Logistic Regression Train Score: 0.990506329114
-Logistic Regression Test Score: 0.705882352941
-Logistic Regression (C=0.1) Train Score: 0.908227848101
-Logistic Regression (C=0.1) Test Score: 0.772058823529
-'''
 
 # -------- Predicting with Ensemble Voting based on the above classifiers
 from sklearn.ensemble import VotingClassifier
@@ -114,9 +66,3 @@ y_train_ensemble = eclf.predict(X_train)
 y_pred_ensemble = eclf.predict(X_test)
 print('Ensemble Voting Train Score:', np.mean(y_train == y_train_ensemble))
 print('Ensemble Voting Test Score:', np.mean(y_test == y_pred_ensemble))
-
-'''
-Outputs:
-Ensemble Voting Train Score: 1.0
-Ensemble Voting Test Score: 0.786764705882
-'''
