@@ -1,6 +1,8 @@
 # ecg-classification
 ECG-based Arrhythmia Classification
 
+Jupyter Notebook: ecg-exp.ipynb
+
 # dataset
 UCI Arrhythmia Dataset
 http://archive.ics.uci.edu/ml/datasets/arrhythmia
